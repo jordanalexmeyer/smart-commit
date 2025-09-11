@@ -171,54 +171,10 @@ else
     exit 1
 fi
 
-# Show the generated message and ask for confirmation
+# Show the generated message and accept with Enter only
 echo "Generated commit message:"
 echo "$COMMIT_MSG"
 echo
-echo "Do you want to:"
-echo "1) Use this message"
-echo "2) Edit this message"
-echo "3) Regenerate with AI"
-echo "4) Write a new message"
-echo "5) Cancel commit"
-read -p "Select option (1-5): " OPTION
-
-case $OPTION in
-    1)
-        git commit -m "$COMMIT_MSG"
-        echo "Changes committed successfully!"
-        ;;
-    2)
-        echo "$COMMIT_MSG" > .git/COMMIT_EDITMSG
-        git commit -e -F .git/COMMIT_EDITMSG
-        ;;
-    3)
-        if [ "$OPENAI_API_KEY" != "INSERT_KEY_HERE" ]; then
-            generate_ai_commit_message
-            echo "New generated commit message:"
-            echo "$COMMIT_MSG"
-            read -p "Use this message? (y/n): " USE_MSG
-            if [[ "$USE_MSG" == "y" || "$USE_MSG" == "Y" ]]; then
-                git commit -m "$COMMIT_MSG"
-                echo "Changes committed successfully!"
-            else
-                echo "$COMMIT_MSG" > .git/COMMIT_EDITMSG
-                git commit -e -F .git/COMMIT_EDITMSG
-            fi
-        else
-            echo "OpenAI API key not configured. Set the OPENAI_API_KEY environment variable first."
-            exit 1
-        fi
-        ;;
-    4)
-        git commit -e
-        ;;
-    5)
-        echo "Commit canceled."
-        exit 0
-        ;;
-    *)
-        echo "Invalid option. Commit canceled."
-        exit 1
-        ;;
-esac
+read -p "Press Enter to commit with this message..." _
+git commit -m "$COMMIT_MSG"
+echo "Changes committed successfully!"

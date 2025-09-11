@@ -138,85 +138,14 @@ fi
 # Construct the full branch name
 FULL_BRANCH_NAME="${BRANCH_PREFIX}${RANDOM_SUFFIX}-${BRANCH_NAME}"
 
-# Show the generated branch name and ask for confirmation
+# Show the generated branch name and accept with Enter only
 echo "Generated branch name:"
 echo "$FULL_BRANCH_NAME"
 echo
-echo "Do you want to:"
-echo "1) Create and checkout this branch"
-echo "2) Edit the branch name"
-echo "3) Regenerate with AI"
-echo "4) Enter a custom branch name"
-echo "5) Cancel"
-read -p "Select option (1-5): " OPTION
-
-case $OPTION in
-    1)
-        if git checkout -b "$FULL_BRANCH_NAME"; then
-            echo "Successfully created and switched to branch: $FULL_BRANCH_NAME"
-        else
-            echo "Error: Failed to create branch. Branch may already exist."
-            exit 1
-        fi
-        ;;
-    2)
-        echo "Current branch name: $FULL_BRANCH_NAME"
-        read -p "Enter new branch name: " EDITED_NAME
-        if [ -n "$EDITED_NAME" ]; then
-            if git checkout -b "$EDITED_NAME"; then
-                echo "Successfully created and switched to branch: $EDITED_NAME"
-            else
-                echo "Error: Failed to create branch. Branch may already exist."
-                exit 1
-            fi
-        else
-            echo "Branch creation canceled."
-            exit 0
-        fi
-        ;;
-    3)
-        if [ "$OPENAI_API_KEY" != "INSERT_KEY_HERE" ]; then
-            generate_ai_branch_name
-            NEW_FULL_BRANCH_NAME="${BRANCH_PREFIX}${RANDOM_SUFFIX}-${BRANCH_NAME}"
-            echo "New generated branch name:"
-            echo "$NEW_FULL_BRANCH_NAME"
-            read -p "Use this branch name? (y/n): " USE_NAME
-            if [[ "$USE_NAME" == "y" || "$USE_NAME" == "Y" ]]; then
-                if git checkout -b "$NEW_FULL_BRANCH_NAME"; then
-                    echo "Successfully created and switched to branch: $NEW_FULL_BRANCH_NAME"
-                else
-                    echo "Error: Failed to create branch. Branch may already exist."
-                    exit 1
-                fi
-            else
-                echo "Branch creation canceled."
-                exit 0
-            fi
-        else
-            echo "OpenAI API key not configured. Cannot regenerate."
-            exit 1
-        fi
-        ;;
-    4)
-        read -p "Enter custom branch name: " CUSTOM_NAME
-        if [ -n "$CUSTOM_NAME" ]; then
-            if git checkout -b "$CUSTOM_NAME"; then
-                echo "Successfully created and switched to branch: $CUSTOM_NAME"
-            else
-                echo "Error: Failed to create branch. Branch may already exist."
-                exit 1
-            fi
-        else
-            echo "Branch creation canceled."
-            exit 0
-        fi
-        ;;
-    5)
-        echo "Branch creation canceled."
-        exit 0
-        ;;
-    *)
-        echo "Invalid option. Branch creation canceled."
-        exit 1
-        ;;
-esac
+read -p "Press Enter to create and checkout this branch..." _
+if git checkout -b "$FULL_BRANCH_NAME"; then
+    echo "Successfully created and switched to branch: $FULL_BRANCH_NAME"
+else
+    echo "Error: Failed to create branch. Branch may already exist."
+    exit 1
+fi
